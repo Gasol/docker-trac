@@ -1,0 +1,30 @@
+#!/bin/sh
+# vim: set sw=4 ts=4 et:
+
+set -e
+
+if [ -f "$PIP_REQUIREMENTS_FILE" ]; then
+    pip install -r "$PIP_REQUIREMENTS_FILE"
+fi
+
+if [ "$1" = "admin" ]; then
+    shift
+    trac-admin $*
+elif [ "$1" = "initenv" ]; then
+    project_name="$2"
+    if [ -z "$project_name" ]; then
+        >&2 echo "Invalid project name..."
+        >&2 echo "Usage: initenv <project>"
+        exit 1
+    fi
+    parent_dir=${TRAC_PARENT_DIR:-/trac}
+    parent_dir="${parent_dir%/}"
+    project_dir="$parent_dir/$project_name"
+    realm=${TRAC_REALM:-default}
+
+    docker-initenv  "$project_dir" "$realm"
+    printf "You can run a standalone server with tracd and login as admin with the password \"s3cret\" by default.\n"
+    echo "  $ tracd --port=80 --auth=\"$project_name,$project_dir/.htpasswd,$realm\" \"$project_dir\""
+else
+    exec tracd $*
+fi
