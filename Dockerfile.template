@@ -1,0 +1,29 @@
+# vim: set ft=dockerfile:
+
+FROM python:2.7.17-alpine%%ALPINE_VERSION%%
+
+ENV ALPINE_VERSION=%%ALPINE_VERSION%%
+ENV TRAC_VERSION=%%TRAC_VERSION%%
+ENV TRAC_URL=%%TRAC_URL%%
+ENV TRAC_URL_FILENAME=%%TRAC_URL_FILENAME%%
+ENV TRAC_SHA256=%%TRAC_SHA256%%
+ENV TRAC_PARENT_DIR=/trac/
+
+EXPOSE 80
+
+WORKDIR /trac
+VOLUME /trac
+
+COPY docker-entrypoint /usr/local/bin/docker-entrypoint
+COPY docker-initenv /usr/local/bin/docker-initenv
+
+RUN (set -eux -o pipefail; cd /tmp; \
+      wget -O "$TRAC_URL_FILENAME" "$TRAC_URL"; \
+      echo "$TRAC_SHA256  $TRAC_URL_FILENAME" | sha256sum -c -; \
+      pip install "$TRAC_URL_FILENAME"; \
+      rm "$TRAC_URL_FILENAME")
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
+
+CMD ["--port=80", "--env-parent-dir=/trac"]
+

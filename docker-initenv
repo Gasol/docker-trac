@@ -1,0 +1,15 @@
+#!/bin/sh
+# vim: set sw=4 ts=4 et:
+
+project_dir="$1"
+realm="${2:-default}"
+name="${project_dir%/*}"
+parent_dir="${project_dir##*/}"
+admin=${TRAC_ADMIN:-admin}
+password=${TRAC_ADMIN_PASSWORD:-s3cret}
+password_file="$project_dir/.htpasswd"
+
+mkdir -p "$project_dir"
+trac-admin "$project_dir" initenv "$name" sqlite:db/trac.db
+trac-admin "$project_dir" permission add admin TRAC_ADMIN
+echo "$admin:$realm:"$(printf "$admin:$realm:$password" | md5sum - | sed -e 's/\s\+-//') > "$password_file"
