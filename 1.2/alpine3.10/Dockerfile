@@ -17,6 +17,7 @@ VOLUME /trac
 COPY docker-entrypoint /usr/local/bin/docker-entrypoint
 COPY docker-initenv /usr/local/bin/docker-initenv
 
+RUN apk add --no-cache curl
 RUN (set -eux -o pipefail; cd /tmp; \
       wget -O "$TRAC_URL_FILENAME" "$TRAC_URL"; \
       echo "$TRAC_SHA256  $TRAC_URL_FILENAME" | sha256sum -c -; \

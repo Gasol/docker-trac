@@ -1,5 +1,7 @@
 # Trac
 
+[![Build Status](https://travis-ci.org/Gasol/docker-trac.svg?branch=master)](https://travis-ci.org/Gasol/docker-trac)
+
 > https://en.wikipedia.org/wiki/Trac
 
 An open-source, Web-based project management and bug tracking system.

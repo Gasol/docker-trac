@@ -1,0 +1,29 @@
+os: linux
+language: shell
+services: docker
+
+env:
+  - VERSION=1.2 DIST=alpine3.10
+  - VERSION=1.4 DIST=alpine3.10
+
+before_script:
+  - docker info
+  - env | sort
+  - wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
+  - cd "$VERSION/$DIST"
+  - slash='/'; image="trac:${VERSION}-${DIST}"
+
+script:
+  - |
+    (
+      set -Eeuxo pipefail
+      docker build -t "$image" .
+      docker run --rm -v $PWD:/trac "$image" initenv demo
+      id=$(docker run --rm -d -p 80:80 -v $PWD:/trac "$image")
+      ../../wait.sh 80
+      out_file='/tmp/index.out'; travis_retry curl -fsSL 'localhost/demo' -o "$out_file"
+      grep -q 'Welcome to Trac' "$out_file"
+    )
+
+after_script:
+  - docker images
