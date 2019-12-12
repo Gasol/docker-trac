@@ -47,7 +47,7 @@ If you haven't own the Trac environment, You can create one by command `initenv`
 
 > docker run gasolwu/trac [COMMAND] [ARGS]
 
-If the command doesn't match the special commands as described below, It is treated as arguments for `tracd`. If no argument provides, The default arguments of the entrypoint are `--port=80 --env-parent-dir=/trac`.
+If the command doesn't match the special commands as described below, It is treated as arguments for [`tracd`](https://trac.edgewall.org/wiki/TracStandalone). If no argument provides, The default arguments of the entrypoint are `--port=80 --env-parent-dir=/trac`.
 
 Here is full of help message.
 
