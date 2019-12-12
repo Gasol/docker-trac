@@ -1,17 +1,19 @@
 os: linux
 language: shell
 services: docker
-
 env:
-  - VERSION=1.2 DIST=alpine3.10
-  - VERSION=1.4 DIST=alpine3.10
+  jobs:
+    - VERSION=1.2 DIST=alpine3.10
+    - VERSION=1.4 DIST=alpine3.10
+  global:
+    secure: HFDsIhlJiw4DCj9NfK05zZDUL5F/fi7+Nn2Rtaj7nMa90gv68yukT4N6gR3HP1iSNhqkW6bA1Gti8uAyzQKtx5NvR16/Eq61A/vjsjbE4dzG4FHSk4rN2Xxh/yCxNpsHAXW74oaLfuUFJQdg0/oZc06r+jR0iI3GJUl/MM6ANHUCH0JvNvg6PW3S/v58YFDRYZIDL+krDl/P41nhkg8p2ukg0+6zGxtvjgjAAUCE/Ml1iMsvV3QMfvezKZ/tW0vmf8szAsUF+gWOVCplewU1ewDBXOaEOJS/hZqGE4/POhxlkzST2hsmKSEkbzxt406ciOtKfQcd7dy/fRYkSex4kRnWe1ca8o2ocSwhueZAp7MCd+rcn4NlhBdFvns2TpnEqzPDKzFDZcFLDp0aK6pV5B0pXKuNrNB2Ujx0PQt49P7rve6VRoL1uPe/j/05EXnevJVTsMEErTpCKYZjqObFYYEEnroIpzC5oMN3lkxAyVQeL5nNaaVuh4MOyN0amBVjBVlZmZlLo2ZqGZ9VvTX2gzEwwnc/CIBNOpId1PAMJ6rWZsdV6tSOpjXG4p6/teFVLrg+f0nYRxZ8cLzfn8u6dvjvtmM24tIjeRI7k2YLQzT3esOtUc3u7WalncFeCRSx+gFHneCSAKrbvBw79tX9MzPC4mz9juKQJ+rIcSac9IY=
 
 before_script:
   - docker info
   - env | sort
   - wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
   - cd "$VERSION/$DIST"
-  - slash='/'; image="trac:${VERSION}-${DIST}"
+  - slash='/'; image="gasolwu/trac:${VERSION}-${DIST}"
 
 script:
   - |
@@ -27,3 +29,13 @@ script:
 
 after_script:
   - docker images
+
+before_deploy:
+  - echo "$DOCKERHUB_TOKEN" | docker login -u gasolwu --password-stdin
+
+deploy:
+  provider: script
+  script: docker push "$image"
+  skip_cleanup: true
+  on:
+    branch: master
